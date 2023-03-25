@@ -213,7 +213,8 @@ namespace Bedrock_Clicker
             {
                 //If is a key of hotbar, auto disable the auto click
                 if (key == Keys.D1 || key == Keys.D2 || key == Keys.D3 || key == Keys.D4 || key == Keys.D5 || key == Keys.D6 || key == Keys.D7 || key == Keys.D8 || key == Keys.D9)
-                    DisableAutoClick();
+                    if(isEnabled == true)
+                        DisableAutoClick();
             };
 
             //Crate the mouse watcher object
@@ -221,7 +222,8 @@ namespace Bedrock_Clicker
             mouseWatcher.OnWheelScroll += () =>
             {
                 //If is scrolling, auto disable the auto click
-                DisableAutoClick();
+                if(isEnabled == true)
+                    DisableAutoClick();
             };
         }
 
@@ -614,6 +616,7 @@ namespace Bedrock_Clicker
             //Private variables
             private IntPtr windowHandler = IntPtr.Zero;
             private HwndSource windowSource = null;
+            private bool alreadyStartedOnce = false;
 
             //Public variables
             public RawInputDevice[] inputDevicesList = null;
@@ -637,11 +640,14 @@ namespace Bedrock_Clicker
             public void StartWatch()
             {
                 //Register the mouse to be watched
-                RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.ExInputSink | RawInputDeviceFlags.NoLegacy, windowHandler);
+                RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink | RawInputDeviceFlags.NoLegacy, windowHandler); //"InputSink" work inside game, "ExInputSink" not work inside game
 
                 //Register the hook
                 windowSource = HwndSource.FromHwnd(windowHandler);
                 windowSource.AddHook(Hook);
+
+                //Inform that already started
+                alreadyStartedOnce = true;
             }
 
             private IntPtr Hook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
@@ -668,6 +674,10 @@ namespace Bedrock_Clicker
         
             public void StopWatch()
             {
+                //If is never started, cancel
+                if (alreadyStartedOnce == false)
+                    return;
+
                 //Unregister the mouse watched
                 RawInputDevice.UnregisterDevice(HidUsageAndPage.Mouse);
 
@@ -684,6 +694,7 @@ namespace Bedrock_Clicker
                 windowHandler = IntPtr.Zero;
                 windowSource = null;
                 inputDevicesList = null;
+                alreadyStartedOnce = false;
             }
         }
 

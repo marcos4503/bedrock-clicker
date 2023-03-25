@@ -41,14 +41,14 @@
             <GroupBox Header="Preferences" Margin="8,8,8,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="Clicks Per Second" Width="202"/>
-                        <ComboBox x:Name="pref_cps" Width="120" SelectedIndex="0">
+                        <Label Content="Clicks Per Second" Width="197"/>
+                        <ComboBox x:Name="pref_cps" Width="125" SelectedIndex="0">
                             <ComboBoxItem Content="1"/>
                             <ComboBoxItem Content="5"/>
                             <ComboBoxItem Content="8"/>
                             <ComboBoxItem Content="10"/>
                             <ComboBoxItem Content="12"/>
-                            <ComboBoxItem Content="15"/>
+                            <ComboBoxItem Content="15 - NetherGames"/>
                             <ComboBoxItem Content="18"/>
                             <ComboBoxItem Content="20"/>
                             <ComboBoxItem Content="25"/>
@@ -58,8 +58,8 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="Toggle Hotkey" Width="202"/>
-                        <ComboBox x:Name="pref_hotkey" Width="120" SelectedIndex="0">
+                        <Label Content="Toggle Hotkey" Width="197"/>
+                        <ComboBox x:Name="pref_hotkey" Width="125" SelectedIndex="0">
                             <ComboBoxItem Content="TAB"/>
                             <ComboBoxItem Content="CAPS LOCK"/>
                             <ComboBoxItem Content="R"/>
@@ -67,22 +67,22 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="Auto-Toggle Off When Change Item" Width="202"/>
-                        <ComboBox x:Name="pref_autoOff" Width="120" SelectedIndex="0">
+                        <Label Content="AutoToggle Off When Change Item" Width="197"/>
+                        <ComboBox x:Name="pref_autoOff" Width="125" SelectedIndex="0">
                             <ComboBoxItem Content="No"/>
                             <ComboBoxItem Content="Yes"/>
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="Works Only Inside Minecraft" Width="202"/>
-                        <ComboBox x:Name="pref_onlyInsideMc" Width="120" SelectedIndex="0">
+                        <Label Content="Works Only Inside Minecraft" Width="197"/>
+                        <ComboBox x:Name="pref_onlyInsideMc" Width="125" SelectedIndex="0">
                             <ComboBoxItem Content="No"/>
                             <ComboBoxItem Content="Yes"/>
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="Play Sound For Each Click" Width="202"/>
-                        <ComboBox x:Name="pref_clickSound" Width="120" SelectedIndex="0">
+                        <Label Content="Play Sound For Each Click" Width="197"/>
+                        <ComboBox x:Name="pref_clickSound" Width="125" SelectedIndex="0">
                             <ComboBoxItem Content="No"/>
                             <ComboBoxItem Content="Low Volume"/>
                             <ComboBoxItem Content="High Volume"/>
