@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPreferences xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <windowPositionX>1033</windowPositionX>
+  <windowPositionY>198</windowPositionY>
+  <clicksPerSecond>5</clicksPerSecond>
+  <toggleHotkey>0</toggleHotkey>
+  <autoToggleOff>0</autoToggleOff>
+  <worksOnlyInMinecraft>0</worksOnlyInMinecraft>
+  <playSound>2</playSound>
+</ApplicationPreferences>

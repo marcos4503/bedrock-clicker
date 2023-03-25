@@ -1,0 +1,97 @@
+﻿<Window x:Class="Bedrock_Clicker.WindowPvpTips"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Bedrock_Clicker"
+        mc:Ignorable="d"
+        Title="PVP Tips" Height="839" Width="466" Icon="/resources/icon-32x.png" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <Grid Height="800" Width="450" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <ScrollViewer VerticalAlignment="Stretch">
+            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <ComboBox x:Name="language" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="24" SelectedIndex="0">
+                    <ComboBoxItem Content="English"/>
+                    <ComboBoxItem Content="Portuguese"/>
+                </ComboBox>
+                <Label x:Name="title" Content="Title" FontWeight="Bold" FontSize="48" Margin="8,0,8,16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <StackPanel Margin="8,0,8,0">
+                    <Image Height="288" Source="/resources/tip1.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="1." FontSize="24" FontWeight="Bold" Margin="0,0,0,0"/>
+                        <TextBlock x:Name="tip1" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip2.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="2." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip2" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip3.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="3." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip3" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip4.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="4." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip4" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip5.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="5." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip5" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip6.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="6." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip6" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip7.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="7." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip7" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip8.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="8." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip8" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip9.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="9." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip9" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip10.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Label Content="10." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip10" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <Image Height="288" Source="/resources/tip11.png" Width="418" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                        <Label Content="11." FontSize="24" FontWeight="Bold" Margin="2,0,0,0"/>
+                        <TextBlock x:Name="tip11" TextWrapping="Wrap" Width="378" Margin="8,0,0,0" Text="TextBlock" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

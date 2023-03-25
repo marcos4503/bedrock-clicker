@@ -1,0 +1,26 @@
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\Bedrock Clicker.exe.config
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\Bedrock Clicker.exe
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\Bedrock Clicker.pdb
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.csproj.AssemblyReference.cache
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.csproj.SuggestedBindingRedirects.cache
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\MainWindow.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\App.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker_MarkupCompile.cache
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker_MarkupCompile.lref
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\MainWindow.baml
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.g.resources
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock_Clicker.Properties.Resources.resources
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.csproj.GenerateResource.cache
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.csproj.CoreCompileInputs.cache
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.exe
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.pdb
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\WpfAnimatedGif.dll
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\WpfAnimatedGif.pdb
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\WpfAnimatedGif.xml
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker.csproj.CopyComplete
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowOverlay.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowOverlay.baml
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\Bedrock Clicker_Content.g.cs
+D:\Visual-Studio\Bedrock Clicker\bin\Debug\RawInput.Sharp.dll
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowPvpTips.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowPvpTips.baml
