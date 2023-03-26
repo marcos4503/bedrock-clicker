@@ -91,6 +91,9 @@
     <Compile Include="WindowPvpTips.xaml.cs">
       <DependentUpon>WindowPvpTips.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WindowSprint.xaml.cs">
+      <DependentUpon>WindowSprint.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -108,6 +111,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WindowPvpTips.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowSprint.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -191,6 +198,9 @@
     <Resource Include="resources\icon-512x.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="resources\child-indicator.png" />
+    <Resource Include="resources\auto-sprint.png" />
+    <Content Include="resources\auto-sprint.wav" />
     <Content Include="resources\click-high.wav" />
     <Content Include="resources\click-low.wav" />
     <Resource Include="resources\tip1.png" />

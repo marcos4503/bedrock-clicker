@@ -36,7 +36,10 @@ namespace Bedrock_Clicker
         //Window variables
         private NotifyIcon notifyIcon = new NotifyIcon();
         private WindowOverlay overlay = new WindowOverlay();
+        private WindowSprint overlaySprint = new WindowSprint();
         private KeyboardHotkey_Interceptor toggleHotkey = null;
+        private KeyboardHotkey_Interceptor ctrlToggleHotkey = null;
+        private KeyboardHotkey_Interceptor sprintHotkey = null;
         private KeyboardKeys_Watcher keysWatcher = null;
         private MouseWheelKeys_Watcher mouseWatcher = null;
 
@@ -49,6 +52,11 @@ namespace Bedrock_Clicker
         private int clickCount = 0;
         private bool canIncreaseClickCount = false;
         private Timer clickCountTimer = null;
+        //Auto sprint variables
+        private bool isAutoRunEnabled = false;
+        private SoundPlayer autoRunSound = null;
+        private Timer autoRunNotifyTimer = null;
+        private Timer releaseCtrlTimer = null;
 
         //Window methods
 
@@ -62,6 +70,10 @@ namespace Bedrock_Clicker
             pref_cps.SelectedIndex = applicationPreferences.clicksPerSecond;
             pref_hotkey.SelectedIndex = applicationPreferences.toggleHotkey;
             pref_autoOff.SelectedIndex = applicationPreferences.autoToggleOff;
+            if (applicationPreferences.autoToggleOff == 0)
+                pref_autoSprint.SelectedIndex = 0;
+            if (applicationPreferences.autoToggleOff == 1)
+                pref_autoSprint.SelectedIndex = 1;
             pref_onlyInsideMc.SelectedIndex = applicationPreferences.worksOnlyInMinecraft;
             pref_clickSound.SelectedIndex = applicationPreferences.playSound;
 
@@ -81,6 +93,13 @@ namespace Bedrock_Clicker
             this.notifyIcon.ContextMenuStrip.Items.Add("Quit", null, this.NotifyIcon_Quit);
             this.notifyIcon.Icon = new Icon(@"../../resources/icon-tray.ico");
 
+            //Initialize the click and sprint sound
+            if (applicationPreferences.playSound == 1)
+                clickSound = new SoundPlayer(@"../../resources/click-low.wav");
+            if (applicationPreferences.playSound == 2)
+                clickSound = new SoundPlayer(@"../../resources/click-high.wav");
+            autoRunSound = new SoundPlayer(@"../../resources/auto-sprint.wav");
+
             //Prepare and open the overlay window and hide to use later
             overlay = new WindowOverlay();
             float oldOverlayWidth = (float)overlay.Width;
@@ -95,7 +114,22 @@ namespace Bedrock_Clicker
             overlay.Width = oldOverlayWidth;
             overlay.Height = oldOverlayHeight;
             overlay.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (oldOverlayWidth / 2);
-            overlay.Top = 80;
+            overlay.Top = 86;
+            //Prepare and open the overlay window of auto sprint, and hide to use later
+            overlaySprint = new WindowSprint();
+            float oldOverlaySprintWidth = (float)overlaySprint.Width;
+            float oldOverlaySprintHeight = (float)overlaySprint.Height;
+            overlaySprint.Top = -100;
+            overlaySprint.Left = -100;
+            overlaySprint.Width = 1;
+            overlaySprint.Height = 1;
+            overlaySprint.Show();
+            overlaySprint.Owner = this;
+            overlaySprint.Visibility = Visibility.Collapsed;
+            overlaySprint.Width = oldOverlaySprintWidth;
+            overlaySprint.Height = oldOverlaySprintHeight;
+            overlaySprint.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (oldOverlaySprintWidth / 2);
+            overlaySprint.Top = 170;
 
             //Get the desired clicks per second
             if (applicationPreferences.clicksPerSecond == 0)
@@ -125,27 +159,37 @@ namespace Bedrock_Clicker
 
             //Register the hotkey for toggle auto click
             RegisterToggleHotkey(applicationPreferences.toggleHotkey);
-            //If is desired auto disable auto click on change weapon
+            //If is desired auto disable auto click on change weapon, register the keys watcher to auto disable clicker and prepare the auto sprint embeded feature
             if (applicationPreferences.autoToggleOff == 1)
-                RegisterKeysWatcher();
+                RegisterKeysWatcher_And_PrepareAutoSprintFeature();
             //If is desired to work only when is in minecraft, enable the program monitor
             if (applicationPreferences.worksOnlyInMinecraft == 1)
                 StartCurrentWindowMonitor();
 
-            //Initialize the click sound
-            if (applicationPreferences.playSound == 1)
-                clickSound = new SoundPlayer(@"../../resources/click-low.wav");
-            if (applicationPreferences.playSound == 2)
-                clickSound = new SoundPlayer(@"../../resources/click-high.wav");
+            //Show warning if selected clicks per second rate is much high
+            pref_cps.SelectionChanged += (sender, eventt) =>
+            {
+                if (pref_cps.SelectedIndex >= 6)
+                    System.Windows.MessageBox.Show("Note that some servers are able to detect very high Clicks Per Second rate. Also, some servers may enforce account " +
+                                                   "kicking, suspension or banning for using auto-clicker with very high CPS rate.\n\nStay tuned! :)", "Warning!");
+            };
+            //Update the autosprint feature display, on change the auto toggle of when change item
+            pref_autoOff.SelectionChanged += (sender, eventt) =>
+            {
+                if (pref_autoOff.SelectedIndex == 0)
+                    pref_autoSprint.SelectedIndex = 0;
+                if (pref_autoOff.SelectedIndex == 1)
+                    pref_autoSprint.SelectedIndex = 1;
+            };
 
             //Prepare the help button
-            help.Click += (sender, eventt) => 
+            help.Click += (sender, eventt) =>
             {
                 //Show help
                 System.Windows.MessageBox.Show("The Bedrock Clicker is an auto-clicker program for you that play Minecraft! To use the program is very simple!\n\n" +
                                                "In \"Toggle Hotkey\", define a hotkey to Enable and Disable the auto-clicker. Once that's done, leave Bedrock Clicker " +
                                                "open while you play Minecraft. Whenever you need to hit, press the defined key to start or stop hitting.\n\n" +
-                                               "Enjoy and take a look at the other preferences too! There may be something that will be of use to you!", 
+                                               "Enjoy and take a look at the other preferences too! There may be something that will be of use to you!",
                                                "How To Use Bedrock Clicker");
             };
             //Prepare the pvp tips button
@@ -161,13 +205,6 @@ namespace Bedrock_Clicker
                 //Open the donation page
                 Process.Start("https://www.paypal.com/donate/?hosted_button_id=MVDJY3AXLL8T2");
             };
-
-            //Show warning if clicks per second rate is much high
-            pref_cps.SelectionChanged += (sender, eventt) =>
-            {
-                if(pref_cps.SelectedIndex >= 6)
-                    System.Windows.MessageBox.Show("Note that some servers are able to detect very high Clicks Per Second rate. Also, some servers may enforce account kicking, suspension or banning for using auto-clicker with very high CPS rate.\n\nStay tuned! :)", "Warning!");
-            };
         }
 
         //Auto clicker methods
@@ -175,7 +212,7 @@ namespace Bedrock_Clicker
         private void RegisterToggleHotkey(int hotkeySelected)
         {
             //Prepare the desired hotkey
-            VirtualKeyCodes keycode = VirtualKeyCodes.A;
+            VirtualKeyCodes keycode = VirtualKeyCodes.O;
             if (hotkeySelected == 0)
                 keycode = VirtualKeyCodes.TAB;
             if (hotkeySelected == 1)
@@ -186,13 +223,13 @@ namespace Bedrock_Clicker
                 keycode = VirtualKeyCodes.F;
 
             //Create the toggle hotkey interceptor
-            toggleHotkey = new KeyboardHotkey_Interceptor(this, ModifierKeyCodes.None, keycode);
-            toggleHotkey.OnPressHotkey += () => 
+            toggleHotkey = new KeyboardHotkey_Interceptor(this, 2, ModifierKeyCodes.None, keycode);
+            toggleHotkey.OnPressHotkey += () =>
             {
                 //If the autoclick is disabled, enable it
-                if(isEnabled == false)
+                if (isEnabled == false)
                 {
-                    if(currentWindow.Equals("Minecraft") == true) //<- Only starts the auto click, if the Minecraft is on foreground
+                    if (currentWindow.Equals("Minecraft") == true) //<- Only starts the auto click, if the Minecraft is on foreground
                         EnableAutoClick();
                     return;
                 }
@@ -203,26 +240,56 @@ namespace Bedrock_Clicker
                     return;
                 }
             };
+
+            //Create the alternative toggle hotkey interceptor with CTRL modifier
+            ctrlToggleHotkey = new KeyboardHotkey_Interceptor(this, 4, ModifierKeyCodes.Control, keycode);
+            ctrlToggleHotkey.OnPressHotkey += () => { toggleHotkey.ForceOnPressHotkeyEvent(); };
         }
 
-        private void RegisterKeysWatcher()
+        private void RegisterKeysWatcher_And_PrepareAutoSprintFeature()
         {
-            //Create the keys watcher object
+            //First, register the hotkey to toggle autosprint, for auto sprint feature work
+            sprintHotkey = new KeyboardHotkey_Interceptor(this, 6, ModifierKeyCodes.None, VirtualKeyCodes.PAGE_UP);
+            sprintHotkey.OnPressHotkey += () =>
+            {
+                //If auto sprint is disabled, enable it
+                if (isAutoRunEnabled == false)
+                {
+                    if (currentWindow.Equals("Minecraft") == true) //<- Only starts the autosprint, if the Minecraft is on foreground
+                        EnableAutoSprint();
+                    return;
+                }
+                //If auto sprint is enabled, disable it
+                if (isAutoRunEnabled == true)
+                {
+                    DisableAutoSprint();
+                    return;
+                }
+            };
+            //Now that the hotkey for toggle auto sprint is created, disable the autosprint by default and show the overlay to user know
+            DisableAutoSprint();
+
+            //Create the keys watcher object for auto disable clicker, and for auto sprint feature
             keysWatcher = new KeyboardKeys_Watcher();
             keysWatcher.OnPressKeys += (Keys key) =>
             {
                 //If is a key of hotbar, auto disable the auto click
                 if (key == Keys.D1 || key == Keys.D2 || key == Keys.D3 || key == Keys.D4 || key == Keys.D5 || key == Keys.D6 || key == Keys.D7 || key == Keys.D8 || key == Keys.D9)
-                    if(isEnabled == true)
+                    if (isEnabled == true)
                         DisableAutoClick();
+
+                //If pressed W or SPACE, send to autosprint process it
+                if (key == Keys.W || key == Keys.Space)
+                    if (isAutoRunEnabled == true)
+                        Sprint();
             };
 
-            //Crate the mouse watcher object
+            //Create the mouse watcher object for auto disable clicker
             mouseWatcher = new MouseWheelKeys_Watcher(this);
             mouseWatcher.OnWheelScroll += () =>
             {
                 //If is scrolling, auto disable the auto click
-                if(isEnabled == true)
+                if (isEnabled == true)
                     DisableAutoClick();
             };
         }
@@ -300,14 +367,14 @@ namespace Bedrock_Clicker
         private void Click()
         {
             //Play click sound, if have
-            if(clickSound != null)
+            if (clickSound != null)
                 clickSound.Play();
 
             //Do the simulated click
             DoLeftMouseClick();
 
             //Increase click counter
-            if(canIncreaseClickCount == true)
+            if (canIncreaseClickCount == true)
             {
                 clickCount += 1;
                 overlay.cps.Content = clickCount.ToString();
@@ -338,6 +405,79 @@ namespace Bedrock_Clicker
             //Disable The Object That Reads Raw Input Of Mouse If Have (If Auto Disable Auto-Click is Enabled)
             if (mouseWatcher != null)
                 mouseWatcher.StopWatch();
+        }
+
+        private void EnableAutoSprint()
+        {
+            //Show and change the interface of sprint overlay
+            overlaySprint.background.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(191, 3, 109, 0));
+            overlaySprint.status.Content = "ON";
+            overlaySprint.Visibility = Visibility.Visible;
+
+            //If have a timer, start (or restart) the timer that hides the overlay after a time
+            if (autoRunNotifyTimer != null)
+            {
+                autoRunNotifyTimer.Stop();
+                autoRunNotifyTimer.Start();
+            }
+
+            //Play the sound
+            if (autoRunSound != null)
+                autoRunSound.Play();
+            //Inform that autosprint is running
+            isAutoRunEnabled = true;
+        }
+
+        private void Sprint()
+        {
+            //Now that is receiving W or SPACE keys input, simulate the CTRL input together, to start to run ingame
+            if (releaseCtrlTimer == null) //<- If don't have a release CTRL timer created, create one to simulate CTRL key release
+            {
+                releaseCtrlTimer = new Timer { Interval = 50 };
+                releaseCtrlTimer.Enabled = true;
+                releaseCtrlTimer.Tick += new EventHandler((object sender, EventArgs e) =>
+                {
+                    DoCtrlKeyboardPress_Up();
+                    releaseCtrlTimer.Stop();
+                    overlaySprint.Visibility = Visibility.Collapsed; //<- hiding overlay = CTRL is up
+                });
+            }
+
+            //Simulate CTRL key press down and prepare the timer to release CTRL key
+            DoCtrlKeyboardPress_Down();
+            releaseCtrlTimer.Stop();
+            releaseCtrlTimer.Start();
+            //Show the sprint overlay to player knows that the auto sprint is making effect
+            autoRunNotifyTimer.Stop();
+            overlaySprint.Visibility = Visibility.Visible; //<- showing overlay = CTRL is down
+        }
+
+        private void DisableAutoSprint()
+        {
+            //Show and change the interface of sprint overlay
+            overlaySprint.background.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(191, 136, 0, 0));
+            overlaySprint.status.Content = "OFF";
+            overlaySprint.Visibility = Visibility.Visible;
+
+            //If don't have a timer, create the timer that hides the overlay after a time
+            if (autoRunNotifyTimer == null)
+            {
+                autoRunNotifyTimer = new Timer { Interval = 5000 };
+                autoRunNotifyTimer.Enabled = true;
+                autoRunNotifyTimer.Tick += new EventHandler((object sender, EventArgs e) => { overlaySprint.Visibility = Visibility.Collapsed; autoRunNotifyTimer.Stop(); });
+            }
+            //If have a timer, start (or restart) the timer that hides the overlay after a time
+            if (autoRunNotifyTimer != null)
+            {
+                autoRunNotifyTimer.Stop();
+                autoRunNotifyTimer.Start();
+            }
+
+            //Play the sound
+            if (autoRunSound != null)
+                autoRunSound.Play();
+            //Inform that autosprint is not running
+            isAutoRunEnabled = false;
         }
 
         //Notify icon methods
@@ -407,6 +547,10 @@ namespace Bedrock_Clicker
             //Clear the hotkeys registered
             if (toggleHotkey != null)
                 toggleHotkey.Dispose();
+            if (ctrlToggleHotkey != null)
+                ctrlToggleHotkey.Dispose();
+            if (sprintHotkey != null)
+                sprintHotkey.Dispose();
             if (keysWatcher != null)
                 keysWatcher.Dispose();
             if (mouseWatcher != null)
@@ -437,6 +581,7 @@ namespace Bedrock_Clicker
         {
             TAB = 9,
             CAPS_LOCK = 20,
+            PAGE_UP = 33,
             A = 65,
             B = 66,
             C = 67,
@@ -492,16 +637,16 @@ namespace Bedrock_Clicker
 
             //Core methods
 
-            public KeyboardHotkey_Interceptor(Window window, ModifierKeyCodes modifierCode, VirtualKeyCodes keyCode)
+            public KeyboardHotkey_Interceptor(Window window, int id, ModifierKeyCodes modifierCode, VirtualKeyCodes keyCode)
             {
                 //Store the information
                 this.window = window;
                 this.modifier = modifierCode;
                 this.key = keyCode;
 
-                //Prepare the host
+                //Prepare the host and identifier of this hotkey registration
                 host = new WindowInteropHelper(this.window);
-                identifier = this.window.GetHashCode();
+                identifier = (this.window.GetHashCode() + id);
 
                 //Register the hotkey
                 RegisterHotKey(host.Handle, identifier, this.modifier, this.key);
@@ -514,6 +659,13 @@ namespace Bedrock_Clicker
             {
                 //Validate the response
                 if ((msg.message == 786) && (msg.wParam.ToInt32() == identifier) && (OnPressHotkey != null))
+                    OnPressHotkey();
+            }
+
+            public void ForceOnPressHotkeyEvent()
+            {
+                //Force the execution of the event "OnPressHotkey"
+                if (OnPressHotkey != null)
                     OnPressHotkey();
             }
 
@@ -585,13 +737,13 @@ namespace Bedrock_Clicker
             {
                 //If the key code is major than zero, continues to process
                 if (nCode >= 0)
-                    if(wParam == (IntPtr)WM_KEYDOWN)   //<- (for more performance, if is a keyboard key pressed down event, send callback)
+                    if (wParam == (IntPtr)WM_KEYDOWN)   //<- (for more performance, if is a keyboard key pressed down event, send callback)
                         if (OnPressKeys != null)
                             OnPressKeys((Keys)Marshal.ReadInt32(lParam));
 
                 return CallNextHookEx(hookId, nCode, wParam, lParam);
             }
-        
+
             public void Dispose()
             {
                 //If is not disposed, dispose of this object
@@ -671,7 +823,7 @@ namespace Bedrock_Clicker
 
                 return IntPtr.Zero;
             }
-        
+
             public void StopWatch()
             {
                 //If is never started, cancel
@@ -684,7 +836,7 @@ namespace Bedrock_Clicker
                 //Unregister the hook
                 windowSource.RemoveHook(Hook);
             }
-        
+
             public void Dispose()
             {
                 //Remove all hooks and registrations
@@ -756,6 +908,30 @@ namespace Bedrock_Clicker
 
             mouse_event(MOUSEEVENTF_LEFTDOWN, pnt.X, pnt.Y, 0, 0);
             mouse_event(MOUSEEVENTF_LEFTUP, pnt.X, pnt.Y, 0, 0);
+        }
+
+        #endregion
+
+        #region ControlPressSimulationInterface
+
+        const int VK_CONTROL = 0x11;
+        const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
+        const uint KEYEVENTF_KEYUP = 0x0002;
+
+
+        [DllImport("user32.dll")]
+        public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+
+        public static void DoCtrlKeyboardPress_Down()
+        {
+            keybd_event((byte)VK_CONTROL, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
+        }
+
+        public static void DoCtrlKeyboardPress_Up()
+        {
+            keybd_event((byte)VK_CONTROL, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
+            keybd_event((byte)VK_CONTROL, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
         }
 
         #endregion

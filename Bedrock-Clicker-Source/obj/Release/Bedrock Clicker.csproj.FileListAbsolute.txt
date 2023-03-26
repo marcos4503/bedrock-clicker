@@ -24,3 +24,5 @@ D:\Visual-Studio\Bedrock Clicker\obj\Release\Bedrock Clicker.pdb
 D:\Visual-Studio\Bedrock Clicker\bin\Release\RawInput.Sharp.dll
 D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowPvpTips.g.cs
 D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowPvpTips.baml
+D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowSprint.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowSprint.baml

@@ -14,8 +14,8 @@ namespace Bedrock_Clicker
         private const string fileName = "settings.xml";
 
         //Variables
-        public int windowPositionX = 100;
-        public int windowPositionY = 100;
+        public int windowPositionX = 80;
+        public int windowPositionY = 80;
         public int clicksPerSecond = 0;
         public int toggleHotkey = 0;
         public int autoToggleOff = 0;

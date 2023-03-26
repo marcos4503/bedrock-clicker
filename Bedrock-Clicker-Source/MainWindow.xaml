@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Bedrock_Clicker"
         mc:Ignorable="d"
-        Title="Bedrock Clicker" Height="650" Width="366" Icon="/resources/icon-32x.png" ResizeMode="NoResize" WindowStartupLocation="Manual" WindowStyle="SingleBorderWindow" Closing="Window_Closing">
+        Title="Bedrock Clicker" Height="684" Width="366" Icon="/resources/icon-32x.png" ResizeMode="NoResize" WindowStartupLocation="Manual" WindowStyle="SingleBorderWindow" Closing="Window_Closing">
     <Grid Width="350" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>
@@ -58,17 +58,28 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="Toggle Hotkey" Width="197"/>
-                        <ComboBox x:Name="pref_hotkey" Width="125" SelectedIndex="0">
+                        <Label Content="Toggle Hotkeys (Clicker &amp; Sprinter)" Width="197"/>
+                        <ComboBox x:Name="pref_hotkey" Width="60" SelectedIndex="0">
                             <ComboBoxItem Content="TAB"/>
                             <ComboBoxItem Content="CAPS LOCK"/>
                             <ComboBoxItem Content="R"/>
                             <ComboBoxItem Content="F"/>
                         </ComboBox>
+                        <ComboBox Width="61" SelectedIndex="0" Margin="4,0,0,0">
+                            <ComboBoxItem Content="PG UP"/>
+                        </ComboBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="AutoToggle Off When Change Item" Width="197"/>
+                        <Label Content="Auto Toggle Off On Change Item" Width="197" Padding="5,5,3,5"/>
                         <ComboBox x:Name="pref_autoOff" Width="125" SelectedIndex="0">
+                            <ComboBoxItem Content="No"/>
+                            <ComboBoxItem Content="Yes"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Image Height="20" Source="/resources/child-indicator.png" Visibility="Visible" Width="13" Margin="4,4,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" OpacityMask="#66FFFFFF"/>
+                        <Label Content="Auto Sprint Feature" Width="180" Margin="0,0,0,0" Padding="3,5,5,5" IsEnabled="False"/>
+                        <ComboBox x:Name="pref_autoSprint" Width="125" SelectedIndex="0" IsEnabled="False">
                             <ComboBoxItem Content="No"/>
                             <ComboBoxItem Content="Yes"/>
                         </ComboBox>
