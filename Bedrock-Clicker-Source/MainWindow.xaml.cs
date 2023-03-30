@@ -39,6 +39,7 @@ namespace Bedrock_Clicker
         private WindowSprint overlaySprint = new WindowSprint();
         private KeyboardHotkey_Interceptor toggleHotkey = null;
         private KeyboardHotkey_Interceptor ctrlToggleHotkey = null;
+        private KeyboardHotkey_Interceptor shiftToggleHotkey = null;
         private KeyboardHotkey_Interceptor sprintHotkey = null;
         private KeyboardKeys_Watcher keysWatcher = null;
         private MouseWheelKeys_Watcher mouseWatcher = null;
@@ -244,12 +245,15 @@ namespace Bedrock_Clicker
             //Create the alternative toggle hotkey interceptor with CTRL modifier
             ctrlToggleHotkey = new KeyboardHotkey_Interceptor(this, 4, ModifierKeyCodes.Control, keycode);
             ctrlToggleHotkey.OnPressHotkey += () => { toggleHotkey.ForceOnPressHotkeyEvent(); };
+            //Create the alternative toggle hotkey interceptor with SHIFT modifier
+            shiftToggleHotkey = new KeyboardHotkey_Interceptor(this, 6, ModifierKeyCodes.Shift, keycode);
+            shiftToggleHotkey.OnPressHotkey += () => { toggleHotkey.ForceOnPressHotkeyEvent(); };
         }
 
         private void RegisterKeysWatcher_And_PrepareAutoSprintFeature()
         {
             //First, register the hotkey to toggle autosprint, for auto sprint feature work
-            sprintHotkey = new KeyboardHotkey_Interceptor(this, 6, ModifierKeyCodes.None, VirtualKeyCodes.PAGE_UP);
+            sprintHotkey = new KeyboardHotkey_Interceptor(this, 8, ModifierKeyCodes.None, VirtualKeyCodes.PAGE_UP);
             sprintHotkey.OnPressHotkey += () =>
             {
                 //If auto sprint is disabled, enable it
