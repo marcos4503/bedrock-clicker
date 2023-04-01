@@ -7,4 +7,5 @@
   <autoToggleOff>1</autoToggleOff>
   <worksOnlyInMinecraft>0</worksOnlyInMinecraft>
   <playSound>2</playSound>
+  <aimComplementPhysic>1</aimComplementPhysic>
 </ApplicationPreferences>

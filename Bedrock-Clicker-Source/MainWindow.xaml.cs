@@ -33,14 +33,30 @@ namespace Bedrock_Clicker
             OnStart();
         }
 
+        //Window enums
+        private enum AimType
+        {
+            Up,
+            Normal,
+            Down
+        }
+        private enum AimPhysic
+        {
+            Vanilla,
+            NetherGames
+        }
+
         //Window variables
         private NotifyIcon notifyIcon = new NotifyIcon();
         private WindowOverlay overlay = new WindowOverlay();
         private WindowSprint overlaySprint = new WindowSprint();
+        private WindowAimType overlayAimType = new WindowAimType();
+        private WindowAim overlayAim = new WindowAim();
         private KeyboardHotkey_Interceptor toggleHotkey = null;
         private KeyboardHotkey_Interceptor ctrlToggleHotkey = null;
         private KeyboardHotkey_Interceptor shiftToggleHotkey = null;
         private KeyboardHotkey_Interceptor sprintHotkey = null;
+        private KeyboardHotkey_Interceptor aimPhysicHotkey = null;
         private KeyboardKeys_Watcher keysWatcher = null;
         private MouseWheelKeys_Watcher mouseWatcher = null;
 
@@ -58,6 +74,11 @@ namespace Bedrock_Clicker
         private SoundPlayer autoRunSound = null;
         private Timer autoRunNotifyTimer = null;
         private Timer releaseCtrlTimer = null;
+        //Crosshair complement variables
+        private AimType crosshairComplementType = AimType.Normal;
+        private AimPhysic crosshairComplementPhysic = AimPhysic.Vanilla;
+        private SoundPlayer aimChangeSound = null;
+        private Timer crosshairComplementTimer = null;
 
         //Window methods
 
@@ -72,9 +93,15 @@ namespace Bedrock_Clicker
             pref_hotkey.SelectedIndex = applicationPreferences.toggleHotkey;
             pref_autoOff.SelectedIndex = applicationPreferences.autoToggleOff;
             if (applicationPreferences.autoToggleOff == 0)
+            {
                 pref_autoSprint.SelectedIndex = 0;
+                pref_crosshairComplement.SelectedIndex = 0;
+            }
             if (applicationPreferences.autoToggleOff == 1)
+            {
                 pref_autoSprint.SelectedIndex = 1;
+                pref_crosshairComplement.SelectedIndex = 1;
+            }
             pref_onlyInsideMc.SelectedIndex = applicationPreferences.worksOnlyInMinecraft;
             pref_clickSound.SelectedIndex = applicationPreferences.playSound;
 
@@ -100,6 +127,7 @@ namespace Bedrock_Clicker
             if (applicationPreferences.playSound == 2)
                 clickSound = new SoundPlayer(@"../../resources/click-high.wav");
             autoRunSound = new SoundPlayer(@"../../resources/auto-sprint.wav");
+            aimChangeSound = new SoundPlayer(@"../../resources/aim-change.wav");
 
             //Prepare and open the overlay window and hide to use later
             overlay = new WindowOverlay();
@@ -131,6 +159,36 @@ namespace Bedrock_Clicker
             overlaySprint.Height = oldOverlaySprintHeight;
             overlaySprint.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (oldOverlaySprintWidth / 2);
             overlaySprint.Top = 170;
+            //Prepare and open the overlay aim type and hide to use later
+            overlayAimType = new WindowAimType();
+            float oldOverlayAimTypeWidth = (float)overlayAimType.Width;
+            float oldOverlayAimTypeHeight = (float)overlayAimType.Height;
+            overlayAimType.Top = -100;
+            overlayAimType.Left = -100;
+            overlayAimType.Width = 1;
+            overlayAimType.Height = 1;
+            overlayAimType.Show();
+            overlayAimType.Owner = this;
+            overlayAimType.Visibility = Visibility.Collapsed;
+            overlayAimType.Width = oldOverlayAimTypeWidth;
+            overlayAimType.Height = oldOverlayAimTypeHeight;
+            overlayAimType.Left = 8;
+            overlayAimType.Top = (Screen.PrimaryScreen.Bounds.Height / 2) - (oldOverlayAimTypeHeight / 2);
+            //Prepare and open the overlay aim window and hide to use later
+            overlayAim = new WindowAim();
+            float oldOverlayAimWidth = (float)overlayAim.Width;
+            float oldOverlayAimHeight = (float)overlayAim.Height;
+            overlayAim.Top = -100;
+            overlayAim.Left = -100;
+            overlayAim.Width = 1;
+            overlayAim.Height = 1;
+            overlayAim.Show();
+            overlayAim.Owner = this;
+            overlayAim.Visibility = Visibility.Collapsed;
+            overlayAim.Width = oldOverlayAimWidth;
+            overlayAim.Height = oldOverlayAimHeight;
+            overlayAim.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (oldOverlayAimWidth / 2);
+            overlayAim.Top = (Screen.PrimaryScreen.Bounds.Height / 2) + 6;
 
             //Get the desired clicks per second
             if (applicationPreferences.clicksPerSecond == 0)
@@ -160,9 +218,9 @@ namespace Bedrock_Clicker
 
             //Register the hotkey for toggle auto click
             RegisterToggleHotkey(applicationPreferences.toggleHotkey);
-            //If is desired auto disable auto click on change weapon, register the keys watcher to auto disable clicker and prepare the auto sprint embeded feature
+            //If is desired auto disable auto click on change weapon, register the keys watcher to auto disable clicker and prepare the auto sprint & crosshair complement embeded feature
             if (applicationPreferences.autoToggleOff == 1)
-                RegisterKeysWatcher_And_PrepareAutoSprintFeature();
+                RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature();
             //If is desired to work only when is in minecraft, enable the program monitor
             if (applicationPreferences.worksOnlyInMinecraft == 1)
                 StartCurrentWindowMonitor();
@@ -178,9 +236,37 @@ namespace Bedrock_Clicker
             pref_autoOff.SelectionChanged += (sender, eventt) =>
             {
                 if (pref_autoOff.SelectedIndex == 0)
+                {
                     pref_autoSprint.SelectedIndex = 0;
+                    pref_crosshairComplement.SelectedIndex = 0;
+                }
                 if (pref_autoOff.SelectedIndex == 1)
+                {
                     pref_autoSprint.SelectedIndex = 1;
+                    pref_crosshairComplement.SelectedIndex = 1;
+                }
+
+                if (pref_autoOff.SelectedIndex == 1)
+                    System.Windows.MessageBox.Show("You have just enabled the \"Auto Toggle Off On Change Item\" function. It will cause the auto-clicker to be disabled whenever " +
+                                               "you scroll your mouse wheel or press a button from 1 to 9 to switch slots in Minecraft. This function comes with the following features...\n\n" +
+                                               "Auto Sprint\n\nYou can now turn Auto Sprint off or on by pressing \"Page Up\" on your keyboard. If Auto Sprint is on, whenever you press " +
+                                               "\"W\" or \"SPACE\" in Minecraft Bedrock, you will automatically start sprinting. If you are going to type something, REMEMBER to disable " +
+                                               "Auto Sprint to avoid typing interference.\n\n"+
+                                               "Crosshair Complement\n\nNow, whenever you press \"Right Button\" of your mouse to shoot a Bow or Crossbow, you will see a Crosshair Complement just below " +
+                                               "your crosshair. You can use it to determine how much to raise your crosshair based on the distance to the target. There are 3 types of " +
+                                               "complements, one for targets at the same height, one for targets below you and one for targets above you. You can switch between add-ons " +
+                                               "using the \"Middle Button\" of your mouse.\n\n" +
+                                               "The crosshairs add-on will display silhouettes of different sizes on the side of your crosshair. When shooting with the Bow, compare " +
+                                               "the size of the target with the size of the nearest silhouette. If the target is the same size as some silhouette, adjust the aim until the trace " +
+                                               "of the silhouette hits the top of the target's head. If the target is not the exact size of some silhouette, use the closest-sized silhouette to the target, " +
+                                               "aligning the middle of the silhouette with the center of the target body. Servers may have different physics for arrows, which may affect aiming accuracy. " +
+                                               "So use \"Page Down\" if you want to toggle the physics type of the server you're on, for more accurate of aim complement.\n\n" +
+                                               "The following elements must be obeyed for this add-on to work perfectly...\n" +
+                                               "- The game needs to be Maxed out, but not Full Screen.\n" +
+                                               "- The screen resolution (height) must be 1080 pixels.\n" +
+                                               "- The OS must be Windows 11, because of the screen elements size.\n\n" +
+                                               "That's all! :)",
+                                               "Watch out!");
             };
 
             //Prepare the help button
@@ -250,7 +336,7 @@ namespace Bedrock_Clicker
             shiftToggleHotkey.OnPressHotkey += () => { toggleHotkey.ForceOnPressHotkeyEvent(); };
         }
 
-        private void RegisterKeysWatcher_And_PrepareAutoSprintFeature()
+        private void RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature()
         {
             //First, register the hotkey to toggle autosprint, for auto sprint feature work
             sprintHotkey = new KeyboardHotkey_Interceptor(this, 8, ModifierKeyCodes.None, VirtualKeyCodes.PAGE_UP);
@@ -288,7 +374,7 @@ namespace Bedrock_Clicker
                         Sprint();
             };
 
-            //Create the mouse watcher object for auto disable clicker
+            //Create the mouse watcher object for auto disable clicker and to feature of crosshair complement work
             mouseWatcher = new MouseWheelKeys_Watcher(this);
             mouseWatcher.OnWheelScroll += () =>
             {
@@ -296,6 +382,138 @@ namespace Bedrock_Clicker
                 if (isEnabled == true)
                     DisableAutoClick();
             };
+            mouseWatcher.OnButtonMiddle += () =>
+            {
+                //Change crosshair complement type for Vanilla Physic
+                if (crosshairComplementType == AimType.Down && crosshairComplementPhysic == AimPhysic.Vanilla)
+                {
+                    overlayAimType.up.Visibility = Visibility.Collapsed;
+                    overlayAimType.normal.Visibility = Visibility.Visible;
+                    overlayAimType.down.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimUp.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimNormal.Visibility = Visibility.Visible;
+                    overlayAim.vanillaAimDown.Visibility = Visibility.Collapsed;
+                    crosshairComplementType = AimType.Normal;
+                    aimChangeSound.Play();
+                    return;
+                }
+                if (crosshairComplementType == AimType.Normal && crosshairComplementPhysic == AimPhysic.Vanilla)
+                {
+                    overlayAimType.up.Visibility = Visibility.Visible;
+                    overlayAimType.normal.Visibility = Visibility.Collapsed;
+                    overlayAimType.down.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimUp.Visibility = Visibility.Visible;
+                    overlayAim.vanillaAimNormal.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimDown.Visibility = Visibility.Collapsed;
+                    crosshairComplementType = AimType.Up;
+                    aimChangeSound.Play();
+                    return;
+                }
+                if (crosshairComplementType == AimType.Up && crosshairComplementPhysic == AimPhysic.Vanilla)
+                {
+                    overlayAimType.up.Visibility = Visibility.Collapsed;
+                    overlayAimType.normal.Visibility = Visibility.Collapsed;
+                    overlayAimType.down.Visibility = Visibility.Visible;
+                    overlayAim.vanillaAimUp.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimNormal.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimDown.Visibility = Visibility.Visible;
+                    crosshairComplementType = AimType.Down;
+                    aimChangeSound.Play();
+                    return;
+                }
+                if (crosshairComplementType == AimType.Normal && crosshairComplementPhysic == AimPhysic.NetherGames)
+                {
+                    overlayAimType.up.Visibility = Visibility.Collapsed;
+                    overlayAimType.normal.Visibility = Visibility.Visible;
+                    overlayAimType.down.Visibility = Visibility.Collapsed;
+                    overlayAim.ngAimNormal.Visibility = Visibility.Visible;
+                    crosshairComplementType = AimType.Normal;
+                    aimChangeSound.Play();
+                    return;
+                }
+            };
+            mouseWatcher.OnButtonRight += (bool isDown) =>
+            {
+                //If is pressing down, start the timer to show the aim complement
+                if (isDown == true && currentWindow.Equals("Minecraft")) //<- only shows the aim complement if Minecraft is on foreground
+                {
+                    //If the timer is null, create one
+                    if(crosshairComplementTimer == null)
+                    {
+                        crosshairComplementTimer = new Timer { Interval = 1000 };
+                        crosshairComplementTimer.Enabled = true;
+                        crosshairComplementTimer.Tick += new EventHandler((object sender, EventArgs e) => { overlayAim.Visibility = Visibility.Visible; crosshairComplementTimer.Stop(); });
+                    }
+                    //Start the timer to show aim complement after 1000ms holding the right button
+                    crosshairComplementTimer.Stop();
+                    crosshairComplementTimer.Start();
+                }
+                //If is releasing up, stop the timer and hide the aim complement
+                if (isDown == false)
+                {
+                    //Stop the timer and hide the aim complement
+                    if (crosshairComplementTimer != null)
+                        crosshairComplementTimer.Stop();
+                    overlayAim.Visibility = Visibility.Collapsed;
+                }
+            };
+            mouseWatcher.StartWatch();
+
+            //Show the crosshair complement type on side
+            overlayAimType.Visibility = Visibility.Visible;
+            //Finnaly, register the hotkey to change the aim complement physic, to more accurate
+            aimPhysicHotkey = new KeyboardHotkey_Interceptor(this, 10, ModifierKeyCodes.None, VirtualKeyCodes.PAGE_DOWN);
+            aimPhysicHotkey.OnPressHotkey += () =>
+            {
+                //Change the aim physic type
+                if(crosshairComplementPhysic == AimPhysic.Vanilla)
+                {
+                    overlayAimType.up.Visibility = Visibility.Collapsed;
+                    overlayAimType.normal.Visibility = Visibility.Visible;
+                    overlayAimType.down.Visibility = Visibility.Collapsed;
+                    overlayAimType.physic.Content = "NetherGames Physic";
+                    overlayAim.vanillaPhysic.Visibility = Visibility.Collapsed;
+                    overlayAim.ngPhysic.Visibility = Visibility.Visible;
+                    overlayAim.ngAimNormal.Visibility = Visibility.Visible;
+                    crosshairComplementType = AimType.Normal;
+                    crosshairComplementPhysic = AimPhysic.NetherGames;
+                    aimChangeSound.Play();
+                    //Save the defined aim complement physic type
+                    ApplicationPreferences tempPrefs = new ApplicationPreferences();
+                    tempPrefs.LoadPreferences();
+                    tempPrefs.aimComplementPhysic = 1;
+                    tempPrefs.ApplyPreferences();
+                    return;
+                }
+                if (crosshairComplementPhysic == AimPhysic.NetherGames)
+                {
+                    overlayAimType.up.Visibility = Visibility.Collapsed;
+                    overlayAimType.normal.Visibility = Visibility.Visible;
+                    overlayAimType.down.Visibility = Visibility.Collapsed;
+                    overlayAimType.physic.Content = "Vanilla Physic";
+                    overlayAim.vanillaPhysic.Visibility = Visibility.Visible;
+                    overlayAim.ngPhysic.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimUp.Visibility = Visibility.Collapsed;
+                    overlayAim.vanillaAimNormal.Visibility = Visibility.Visible;
+                    overlayAim.vanillaAimDown.Visibility = Visibility.Collapsed;
+                    crosshairComplementType = AimType.Normal;
+                    crosshairComplementPhysic = AimPhysic.Vanilla;
+                    aimChangeSound.Play();
+                    //Save the defined aim complement physic type
+                    ApplicationPreferences tempPrefs = new ApplicationPreferences();
+                    tempPrefs.LoadPreferences();
+                    tempPrefs.aimComplementPhysic = 0;
+                    tempPrefs.ApplyPreferences();
+                    return;
+                }
+            };
+            //Load the aim complement physic type defined by the user and select it automatically
+            ApplicationPreferences applicationPreferences = new ApplicationPreferences();
+            applicationPreferences.LoadPreferences();
+            if (applicationPreferences.aimComplementPhysic == 0)   //<- If is Vanilla Physic defined
+                Debug.Print("Vanilla Physic was defined to Aim Complement feature.");
+            if (applicationPreferences.aimComplementPhysic == 1)   //<- If is NetherGames Physic defined
+                aimPhysicHotkey.ForceOnPressHotkeyEvent();
         }
 
         private void StartCurrentWindowMonitor()
@@ -362,10 +580,6 @@ namespace Bedrock_Clicker
 
             //Inform that auto click is running
             isEnabled = true;
-
-            //Enable The Object That Reads Raw Input Of Mouse If Have (If Auto Disable Auto-Click is Enabled)
-            if (mouseWatcher != null)
-                mouseWatcher.StartWatch();
         }
 
         private void Click()
@@ -405,10 +619,6 @@ namespace Bedrock_Clicker
 
             //Inform that auto click is not running
             isEnabled = false;
-
-            //Disable The Object That Reads Raw Input Of Mouse If Have (If Auto Disable Auto-Click is Enabled)
-            if (mouseWatcher != null)
-                mouseWatcher.StopWatch();
         }
 
         private void EnableAutoSprint()
@@ -553,8 +763,12 @@ namespace Bedrock_Clicker
                 toggleHotkey.Dispose();
             if (ctrlToggleHotkey != null)
                 ctrlToggleHotkey.Dispose();
+            if (shiftToggleHotkey != null)
+                shiftToggleHotkey.Dispose();
             if (sprintHotkey != null)
                 sprintHotkey.Dispose();
+            if (aimPhysicHotkey != null)
+                aimPhysicHotkey.Dispose();
             if (keysWatcher != null)
                 keysWatcher.Dispose();
             if (mouseWatcher != null)
@@ -586,6 +800,7 @@ namespace Bedrock_Clicker
             TAB = 9,
             CAPS_LOCK = 20,
             PAGE_UP = 33,
+            PAGE_DOWN = 34,
             A = 65,
             B = 66,
             C = 67,
@@ -768,6 +983,11 @@ namespace Bedrock_Clicker
         {
             //Private constants
             private const int WM_INPUT = 0x00FF;
+            private const int RI_MOUSE_WHEEL_UP = 120;
+            private const int RI_MOUSE_WHEEL_DOWN = -120;
+            private const int RI_MOUSE_MIDDLE_DOWN = 16;
+            private const int RI_MOUSE_RIGHT_DOWN = 4;
+            private const int RI_MOUSE_RIGHT_UP = 8;
 
             //Private variables
             private IntPtr windowHandler = IntPtr.Zero;
@@ -780,6 +1000,8 @@ namespace Bedrock_Clicker
             //Public callbacks
 
             public event Action OnWheelScroll;
+            public event Action<bool> OnButtonRight;
+            public event Action OnButtonMiddle;
 
             //Core methods
 
@@ -796,7 +1018,8 @@ namespace Bedrock_Clicker
             public void StartWatch()
             {
                 //Register the mouse to be watched
-                RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink | RawInputDeviceFlags.NoLegacy, windowHandler); //"InputSink" work inside game, "ExInputSink" not work inside game
+                //RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink | RawInputDeviceFlags.NoLegacy, windowHandler);
+                RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, windowHandler); //"InputSink" work inside game, "ExInputSink" not work inside game
 
                 //Register the hook
                 windowSource = HwndSource.FromHwnd(windowHandler);
@@ -818,9 +1041,18 @@ namespace Bedrock_Clicker
                     switch (data)
                     {
                         case RawInputMouseData mouse:
-                            if (mouse.Mouse.ButtonData == 120 || mouse.Mouse.ButtonData == -120)  //<- If is mouse scroll up or down
+                            if (mouse.Mouse.ButtonData == RI_MOUSE_WHEEL_UP || mouse.Mouse.ButtonData == RI_MOUSE_WHEEL_DOWN)  //<- If is mouse scroll up or down
                                 if (OnWheelScroll != null)
                                     OnWheelScroll();
+                            if (((int)mouse.Mouse.Buttons) == RI_MOUSE_MIDDLE_DOWN)  //<- If is mouse middle button down
+                                if (OnButtonMiddle != null)
+                                    OnButtonMiddle();
+                            if (((int)mouse.Mouse.Buttons) == RI_MOUSE_RIGHT_DOWN)  //<- If is mouse right button down
+                                if (OnButtonRight != null)
+                                    OnButtonRight(true);
+                            if (((int)mouse.Mouse.Buttons) == RI_MOUSE_RIGHT_UP)  //<- If is mouse right button up
+                                if (OnButtonRight != null)
+                                    OnButtonRight(false);
                             break;
                     }
                 }

@@ -21,6 +21,7 @@ namespace Bedrock_Clicker
         public int autoToggleOff = 0;
         public int worksOnlyInMinecraft = 0;
         public int playSound = 0;
+        public int aimComplementPhysic = 0;
 
         //Core methods
 
@@ -47,6 +48,7 @@ namespace Bedrock_Clicker
                 autoToggleOff = loadedPreferences.autoToggleOff;
                 worksOnlyInMinecraft = loadedPreferences.worksOnlyInMinecraft;
                 playSound = loadedPreferences.playSound;
+                aimComplementPhysic = loadedPreferences.aimComplementPhysic;
             }
         }
 

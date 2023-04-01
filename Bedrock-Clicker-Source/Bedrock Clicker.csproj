@@ -85,6 +85,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ApplicationPreferences.cs" />
+    <Compile Include="WindowAim.xaml.cs">
+      <DependentUpon>WindowAim.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowAimType.xaml.cs">
+      <DependentUpon>WindowAimType.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowOverlay.xaml.cs">
       <DependentUpon>WindowOverlay.xaml</DependentUpon>
     </Compile>
@@ -106,6 +112,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WindowAim.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowAimType.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WindowOverlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -200,6 +214,14 @@
   <ItemGroup>
     <Resource Include="resources\child-indicator.png" />
     <Resource Include="resources\auto-sprint.png" />
+    <Resource Include="resources\aim-down.png" />
+    <Resource Include="resources\aim-normal.png" />
+    <Resource Include="resources\aim-up.png" />
+    <Content Include="resources\aim-change.wav" />
+    <Resource Include="resources\aim-steve.png" />
+    <Resource Include="resources\aim-down-indicator.png" />
+    <Resource Include="resources\aim-normal-indicator.png" />
+    <Resource Include="resources\aim-up-indicator.png" />
     <Content Include="resources\auto-sprint.wav" />
     <Content Include="resources\click-high.wav" />
     <Content Include="resources\click-low.wav" />

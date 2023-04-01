@@ -26,3 +26,7 @@ D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowPvpTips.g.cs
 D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowPvpTips.baml
 D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowSprint.g.cs
 D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowSprint.baml
+D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowAim.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowAimType.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowAim.baml
+D:\Visual-Studio\Bedrock Clicker\obj\Release\WindowAimType.baml

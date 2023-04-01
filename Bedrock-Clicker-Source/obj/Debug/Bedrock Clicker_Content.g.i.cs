@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/aim-change.wav")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/auto-sprint.wav")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/click-high.wav")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/click-low.wav")]

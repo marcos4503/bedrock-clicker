@@ -23,7 +23,8 @@ Bedrock Clicker is an auto-clicker software created to make Minecraft Bedrock PV
 - Can play sound for each click
 - Show a overlay when clicking, to you know
 - Can be configured to enable clicking only inside Minecraft
-- Togglable Auto Sprint
+- Togglable Auto Sprint for Bedrock
+- Crosshair add-on to facilitate Long Range Shooting with Bows
 - and more!
 
 This is software made for you who can't click as fast as some people, but would still like to play PVP in Minecraft. Inside the software, you will also find several tips to improve your PVP! Enjoy!

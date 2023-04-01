@@ -54,7 +54,7 @@ namespace Bedrock_Clicker
             //Tip #3
             tip3.Text = "Use the Field of View at 75. A smaller field of view will distort your view of the game less, which can help during PVP.";
             //Tip #4
-            tip4.Text = "Don't jump around during PVP. The Bedrock Clicker will already have you clicking fast enough that you only have to worry about aiming and other tactics. In addition to jumping making you more vulnerable to Knockbacks and such, the Crit caused by jumping is disabled on many servers.";
+            tip4.Text = "Don't jump around during PVP. The Bedrock Clicker will already have you clicking fast enough that you only have to worry about aiming and other tactics. In addition to jumping making you more vulnerable to Knockbacks and such, the Crit caused by jumping is disabled on many servers. This doesn't mean you should NEVER jump. A jump given at the right time and in the right direction can make your target lose aim of you, but don't abuse jumps during PVP.";
             //Tip #5
             tip5.Text = "Move in a circular shape around your opponent, and in random directions left or right. This can confuse your opponent and also make him miss some clicks.";
             //Tip #6
@@ -68,7 +68,7 @@ namespace Bedrock_Clicker
             //Tip #10
             tip10.Text = "The player who is on a lower floor always has an advantage since in Minecraft Bedrock the range of the sword is counted from the Head, so the enemy who is above often does not have enough range to hit because counting from his Head to you, the distance can be great so that only you can hit.";
             //Tip #11
-            tip11.Text = "If you are caught in a sequence of hits from the enemy, and you are being thrown into the air, use a Bow, Eggs, Snowballs or place blocks between you and him, to stop the sequence of hits instantly.";
+            tip11.Text = "If you are caught in a sequence of hits from the enemy, and you are being thrown into the air, use a Bow, Eggs, Snowballs or place blocks between you and him, to stop the sequence of hits instantly. Often, just walking backwards can help interrupt these Combos.";
         }
 
         public void InflatePortuguese()
@@ -83,7 +83,7 @@ namespace Bedrock_Clicker
             //Tip #3
             tip3.Text = "Utilize o Campo de Visão em 75. Um campo de visão menor distorcerá menos a sua visão do jogo, o que pode ajudar durante o PVP.";
             //Tip #4
-            tip4.Text = "Não fique pulando durante o PVP. O Bedrock Clicker já te deixará clicando rápido o suficiente para que se preocupe apenas com a mira e outras táticas. Além do pulo te deixar mais vulnerável a Knockbacks e outras coisas, o Crítico causado por pulos é desativado em muitos servidores.";
+            tip4.Text = "Não fique pulando durante o PVP. O Bedrock Clicker já te deixará clicando rápido o suficiente para que se preocupe apenas com a mira e outras táticas. Além do pulo te deixar mais vulnerável a Knockbacks e outras coisas, o Crítico causado por pulos é desativado em muitos servidores. Isso não significa que você NUNCA deva pular. Um pulo dado na hora certa e na direção certa pode fazer com que seu alvo o perca de mira, mas não abuse dos pulos durante o PVP.";
             //Tip #5
             tip5.Text = "Movimente-se num formato circular ao redor do seu oponente, e para direções aleatórias na esquerda ou direita. Isso poderá confundir seu oponente e também faze-lo errar alguns clicks.";
             //Tip #6
@@ -97,7 +97,7 @@ namespace Bedrock_Clicker
             //Tip #10
             tip10.Text = "O jogador que esta num piso mais baixo sempre tem vantagem já que no Minecraft Bedrock o alcance da espada é contado a partir da Cabeça, então o inimigo que esta acima muitas vezes não consegue ter alcance o suficiente para bater pois contando da Cabeça dele até você, a distancia pode ser grande fazendo com que só você consiga bater.";
             //Tip #11
-            tip11.Text = "Se você está preso numa sequência de golpes do inimigo, e esta sendo jogado para o alto, utilize um Arco, Ovos, Bola de Neve ou coloque blocos entre você e ele, para parar a sequencia de golpes instantaneamente.";
+            tip11.Text = "Se você está preso numa sequência de golpes do inimigo, e esta sendo jogado para o alto, utilize um Arco, Ovos, Bola de Neve ou coloque blocos entre você e ele, para parar a sequencia de golpes instantaneamente. Muitas vezes, apenas andar para trás pode ajudar a interromper esses Combos.";
         }
     }
 }
