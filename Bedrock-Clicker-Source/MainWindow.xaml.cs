@@ -45,16 +45,25 @@ namespace Bedrock_Clicker
             Vanilla,
             NetherGames
         }
+        private enum ClickType
+        {
+            Left,
+            Right
+        }
 
         //Window variables
         private NotifyIcon notifyIcon = new NotifyIcon();
         private WindowOverlay overlay = new WindowOverlay();
+        private WindowMouseClick mouseClicking = new WindowMouseClick();
         private WindowSprint overlaySprint = new WindowSprint();
         private WindowAimType overlayAimType = new WindowAimType();
         private WindowAim overlayAim = new WindowAim();
-        private KeyboardHotkey_Interceptor toggleHotkey = null;
-        private KeyboardHotkey_Interceptor ctrlToggleHotkey = null;
-        private KeyboardHotkey_Interceptor shiftToggleHotkey = null;
+        private KeyboardHotkey_Interceptor toggleHotkeyLeft = null;
+        private KeyboardHotkey_Interceptor toggleHotkeyRight = null;
+        private KeyboardHotkey_Interceptor ctrlToggleHotkeyLeft = null;
+        private KeyboardHotkey_Interceptor ctrlToggleHotkeyRight = null;
+        private KeyboardHotkey_Interceptor shiftToggleHotkeyLeft = null;
+        private KeyboardHotkey_Interceptor shiftToggleHotkeyRight = null;
         private KeyboardHotkey_Interceptor sprintHotkey = null;
         private KeyboardHotkey_Interceptor aimPhysicHotkey = null;
         private KeyboardKeys_Watcher keysWatcher = null;
@@ -63,6 +72,7 @@ namespace Bedrock_Clicker
         //Auto click variables
         private string currentWindow = "Minecraft";
         private bool isEnabled = false;
+        private int isEnabledClickingWithButton = -1;
         private int clicksPerSecond = -1;
         private Timer autoClickTimer = null;
         private SoundPlayer clickSound = null;
@@ -90,7 +100,8 @@ namespace Bedrock_Clicker
 
             //Apply preferences loaded to interface
             pref_cps.SelectedIndex = applicationPreferences.clicksPerSecond;
-            pref_hotkey.SelectedIndex = applicationPreferences.toggleHotkey;
+            pref_hotkey_l.SelectedIndex = applicationPreferences.toggleHotkey;
+            pref_sprint_hotkey.SelectedIndex = applicationPreferences.sprintHotkey;
             pref_autoOff.SelectedIndex = applicationPreferences.autoToggleOff;
             if (applicationPreferences.autoToggleOff == 0)
             {
@@ -144,6 +155,21 @@ namespace Bedrock_Clicker
             overlay.Height = oldOverlayHeight;
             overlay.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (oldOverlayWidth / 2);
             overlay.Top = 86;
+            //Prepare and open the mouse cliking window of auto sprint, and hide to use later
+            mouseClicking = new WindowMouseClick();
+            float oldOverlayClickingWidth = (float)mouseClicking.Width;
+            float oldOverlayClickingHeight = (float)mouseClicking.Height;
+            mouseClicking.Top = -100;
+            mouseClicking.Left = -100;
+            mouseClicking.Width = 1;
+            mouseClicking.Height = 1;
+            mouseClicking.Show();
+            mouseClicking.Owner = this;
+            mouseClicking.Visibility = Visibility.Collapsed;
+            mouseClicking.Width = oldOverlayClickingWidth;
+            mouseClicking.Height = oldOverlayClickingHeight;
+            mouseClicking.Left = (Screen.PrimaryScreen.Bounds.Width / 2) - (oldOverlayClickingWidth / 2);
+            mouseClicking.Top = (Screen.PrimaryScreen.Bounds.Height / 2) - (oldOverlayClickingHeight / 2) + 32;
             //Prepare and open the overlay window of auto sprint, and hide to use later
             overlaySprint = new WindowSprint();
             float oldOverlaySprintWidth = (float)overlaySprint.Width;
@@ -220,7 +246,7 @@ namespace Bedrock_Clicker
             RegisterToggleHotkey(applicationPreferences.toggleHotkey);
             //If is desired auto disable auto click on change weapon, register the keys watcher to auto disable clicker and prepare the auto sprint & crosshair complement embeded feature
             if (applicationPreferences.autoToggleOff == 1)
-                RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature();
+                RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature(applicationPreferences.sprintHotkey);
             //If is desired to work only when is in minecraft, enable the program monitor
             if (applicationPreferences.worksOnlyInMinecraft == 1)
                 StartCurrentWindowMonitor();
@@ -309,36 +335,76 @@ namespace Bedrock_Clicker
             if (hotkeySelected == 3)
                 keycode = VirtualKeyCodes.F;
 
-            //Create the toggle hotkey interceptor
-            toggleHotkey = new KeyboardHotkey_Interceptor(this, 2, ModifierKeyCodes.None, keycode);
-            toggleHotkey.OnPressHotkey += () =>
+            //Create the toggle hotkey interceptor (left)
+            toggleHotkeyLeft = new KeyboardHotkey_Interceptor(this, 2, ModifierKeyCodes.None, keycode);
+            toggleHotkeyLeft.OnPressHotkey += () =>
             {
+            ReInterceptToggleHotkeyLeft:
                 //If the autoclick is disabled, enable it
                 if (isEnabled == false)
                 {
+                    DisableAutoClick();
                     if (currentWindow.Equals("Minecraft") == true) //<- Only starts the auto click, if the Minecraft is on foreground
-                        EnableAutoClick();
+                        EnableAutoClick(ClickType.Left);
                     return;
                 }
                 //If the autoclick is enabled, disable it
                 if (isEnabled == true)
                 {
+                    if (isEnabledClickingWithButton != 0) //<- If is already clicking with other button, cancel and change clicking with this, before cancel this clicking
+                    {
+                        isEnabled = false;
+                        goto ReInterceptToggleHotkeyLeft;
+                    }
+                    DisableAutoClick();
+                    return;
+                }
+            };
+
+            //Create the toggle hotkey interceptor (right)
+            toggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 3, ModifierKeyCodes.None, VirtualKeyCodes.APOSTROPHE);
+            toggleHotkeyRight.OnPressHotkey += () =>
+            {
+            ReInterceptToggleHotkeyRight:
+                //If the autoclick is disabled, enable it
+                if (isEnabled == false)
+                {
+                    DisableAutoClick();
+                    if (currentWindow.Equals("Minecraft") == true) //<- Only starts the auto click, if the Minecraft is on foreground
+                        EnableAutoClick(ClickType.Right);
+                    return;
+                }
+                //If the autoclick is enabled, disable it
+                if (isEnabled == true)
+                {
+                    if (isEnabledClickingWithButton != 1) //<- If is already clicking with other button, cancel and change clicking with this, before cancel this clicking
+                    {
+                        isEnabled = false;
+                        goto ReInterceptToggleHotkeyRight;
+                    }
                     DisableAutoClick();
                     return;
                 }
             };
 
             //Create the alternative toggle hotkey interceptor with CTRL modifier
-            ctrlToggleHotkey = new KeyboardHotkey_Interceptor(this, 4, ModifierKeyCodes.Control, keycode);
-            ctrlToggleHotkey.OnPressHotkey += () => { toggleHotkey.ForceOnPressHotkeyEvent(); };
+            ctrlToggleHotkeyLeft = new KeyboardHotkey_Interceptor(this, 4, ModifierKeyCodes.Control, keycode);
+            ctrlToggleHotkeyLeft.OnPressHotkey += () => { toggleHotkeyLeft.ForceOnPressHotkeyEvent(); };
+            ctrlToggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 5, ModifierKeyCodes.Control, VirtualKeyCodes.APOSTROPHE);
+            ctrlToggleHotkeyRight.OnPressHotkey += () => { toggleHotkeyRight.ForceOnPressHotkeyEvent(); };
             //Create the alternative toggle hotkey interceptor with SHIFT modifier
-            shiftToggleHotkey = new KeyboardHotkey_Interceptor(this, 6, ModifierKeyCodes.Shift, keycode);
-            shiftToggleHotkey.OnPressHotkey += () => { toggleHotkey.ForceOnPressHotkeyEvent(); };
+            shiftToggleHotkeyLeft = new KeyboardHotkey_Interceptor(this, 6, ModifierKeyCodes.Shift, keycode);
+            shiftToggleHotkeyLeft.OnPressHotkey += () => { toggleHotkeyLeft.ForceOnPressHotkeyEvent(); };
+            shiftToggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 7, ModifierKeyCodes.Shift, VirtualKeyCodes.APOSTROPHE);
+            shiftToggleHotkeyRight.OnPressHotkey += () => { toggleHotkeyRight.ForceOnPressHotkeyEvent(); };
         }
 
-        private void RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature()
+        private void RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature(int sprintHotkeySelected)
         {
-            //First, register the hotkey to toggle autosprint, for auto sprint feature work
+            //Fires prepare the mouse watcher object, that will be used in this entire method...
+            mouseWatcher = new MouseWheelKeys_Watcher(this);
+
+            //Prepare the autosprint feature to work with PAGE UP anyway! Register the hotkey to toggle autosprint, for auto sprint feature work...
             sprintHotkey = new KeyboardHotkey_Interceptor(this, 8, ModifierKeyCodes.None, VirtualKeyCodes.PAGE_UP);
             sprintHotkey.OnPressHotkey += () =>
             {
@@ -358,6 +424,11 @@ namespace Bedrock_Clicker
             };
             //Now that the hotkey for toggle auto sprint is created, disable the autosprint by default and show the overlay to user know
             DisableAutoSprint();
+            //If have selected a hotkey for autosprint in the mouse, register the button to call the event "OnPressHotkey" of "sprintHotkey"
+            if (sprintHotkeySelected == 1)
+                mouseWatcher.OnButtonForward += () => { sprintHotkey.ForceOnPressHotkeyEvent(); };
+            if (sprintHotkeySelected == 2)
+                mouseWatcher.OnButtonBackward += () => { sprintHotkey.ForceOnPressHotkeyEvent(); };
 
             //Create the keys watcher object for auto disable clicker, and for auto sprint feature
             keysWatcher = new KeyboardKeys_Watcher();
@@ -374,8 +445,7 @@ namespace Bedrock_Clicker
                         Sprint();
             };
 
-            //Create the mouse watcher object for auto disable clicker and to feature of crosshair complement work
-            mouseWatcher = new MouseWheelKeys_Watcher(this);
+            //Config the mouse watcher object for auto disable clicker and to make the feature of crosshair complement work
             mouseWatcher.OnWheelScroll += () =>
             {
                 //If is scrolling, auto disable the auto click
@@ -533,7 +603,7 @@ namespace Bedrock_Clicker
             });
         }
 
-        private void EnableAutoClick()
+        private void EnableAutoClick(ClickType clickType)
         {
             //Change the interface of program
             autoclick_cps.Content = clicksPerSecond.ToString();
@@ -557,21 +627,51 @@ namespace Bedrock_Clicker
             if (random == 4)
                 overlay.clicking4.Visibility = Visibility.Visible;
             overlay.Visibility = Visibility.Visible;
+            mouseClicking.clicking_left.Visibility = Visibility.Collapsed;
+            mouseClicking.clicking_right.Visibility = Visibility.Collapsed;
+            if (clickType == ClickType.Left)
+                mouseClicking.clicking_left.Visibility = Visibility.Visible;
+            if (clickType == ClickType.Right)
+                mouseClicking.clicking_right.Visibility = Visibility.Visible;
+            mouseClicking.Visibility = Visibility.Visible;
 
             //Do the first click, and allow click counter increase, before interval conclusion
             canIncreaseClickCount = true;
-            Click();
-            //If the timer is null, create the timer to do the clicks with delay between each click
-            if (autoClickTimer == null)
+            if (clickType == ClickType.Left)
             {
-                autoClickTimer = new Timer { Interval = ((int)(1000.0f / (float)clicksPerSecond)) };
-                autoClickTimer.Enabled = true;
-                autoClickTimer.Tick += new EventHandler((object sender, EventArgs e) => { Click(); });
-
-                clickCountTimer = new Timer { Interval = 1000 };
-                clickCountTimer.Enabled = true;
-                clickCountTimer.Tick += new EventHandler((object sender, EventArgs e) => { canIncreaseClickCount = false; clickCountTimer.Stop(); });
+                isEnabledClickingWithButton = 0;
+                Click(ClickType.Left);
             }
+            if (clickType == ClickType.Right)
+            {
+                isEnabledClickingWithButton = 1;
+                Click(ClickType.Right);
+            }
+               
+            //LEFT
+            if (clickType == ClickType.Left)
+                if (autoClickTimer == null)   //<--- If the timer is null, create the timer to do the clicks with delay between each click
+                {
+                    autoClickTimer = new Timer { Interval = ((int)(1000.0f / (float)clicksPerSecond)) };
+                    autoClickTimer.Enabled = true;
+                    autoClickTimer.Tick += new EventHandler((object sender, EventArgs e) => { Click(ClickType.Left); });
+
+                    clickCountTimer = new Timer { Interval = 1000 };
+                    clickCountTimer.Enabled = true;
+                    clickCountTimer.Tick += new EventHandler((object sender, EventArgs e) => { canIncreaseClickCount = false; clickCountTimer.Stop(); });
+                }
+            //RIGHT
+            if (clickType == ClickType.Right)
+                if (autoClickTimer == null)   //<--- If the timer is null, create the timer to do the clicks with delay between each click
+                {
+                    autoClickTimer = new Timer { Interval = ((int)(1000.0f / (float)clicksPerSecond)) };
+                    autoClickTimer.Enabled = true;
+                    autoClickTimer.Tick += new EventHandler((object sender, EventArgs e) => { Click(ClickType.Right); });
+
+                    clickCountTimer = new Timer { Interval = 1000 };
+                    clickCountTimer.Enabled = true;
+                    clickCountTimer.Tick += new EventHandler((object sender, EventArgs e) => { canIncreaseClickCount = false; clickCountTimer.Stop(); });
+                }
             //If the timer is not null, resume the timer
             if (autoClickTimer != null)
                 autoClickTimer.Start();
@@ -582,14 +682,17 @@ namespace Bedrock_Clicker
             isEnabled = true;
         }
 
-        private void Click()
+        private void Click(ClickType clickType)
         {
             //Play click sound, if have
             if (clickSound != null)
                 clickSound.Play();
 
             //Do the simulated click
-            DoLeftMouseClick();
+            if (clickType == ClickType.Left)
+                DoLeftMouseClick();
+            if (clickType == ClickType.Right)
+                DoRightMouseClick();
 
             //Increase click counter
             if (canIncreaseClickCount == true)
@@ -607,10 +710,17 @@ namespace Bedrock_Clicker
             autoclick_on.Visibility = Visibility.Hidden;
             autoclick_bg.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(196, 225, 247));
             overlay.Visibility = Visibility.Collapsed;
+            mouseClicking.clicking_left.Visibility = Visibility.Collapsed;
+            mouseClicking.clicking_right.Visibility = Visibility.Collapsed;
+            mouseClicking.Visibility = Visibility.Collapsed;
 
             //Stop the timer of the clicks
-            autoClickTimer.Stop();
-            clickCountTimer.Stop();
+            if (autoClickTimer != null)
+                autoClickTimer.Stop();
+            autoClickTimer = null;
+            if (clickCountTimer != null)
+                clickCountTimer.Stop();
+            clickCountTimer = null;
 
             //Reset click counter
             clickCount = 0;
@@ -619,6 +729,7 @@ namespace Bedrock_Clicker
 
             //Inform that auto click is not running
             isEnabled = false;
+            isEnabledClickingWithButton = -1;
         }
 
         private void EnableAutoSprint()
@@ -733,7 +844,8 @@ namespace Bedrock_Clicker
 
             //Put the new preferences
             applicationPreferences.clicksPerSecond = pref_cps.SelectedIndex;
-            applicationPreferences.toggleHotkey = pref_hotkey.SelectedIndex;
+            applicationPreferences.toggleHotkey = pref_hotkey_l.SelectedIndex;
+            applicationPreferences.sprintHotkey = pref_sprint_hotkey.SelectedIndex;
             applicationPreferences.autoToggleOff = pref_autoOff.SelectedIndex;
             applicationPreferences.worksOnlyInMinecraft = pref_onlyInsideMc.SelectedIndex;
             applicationPreferences.playSound = pref_clickSound.SelectedIndex;
@@ -759,12 +871,18 @@ namespace Bedrock_Clicker
             applicationPreferences.ApplyPreferences();
 
             //Clear the hotkeys registered
-            if (toggleHotkey != null)
-                toggleHotkey.Dispose();
-            if (ctrlToggleHotkey != null)
-                ctrlToggleHotkey.Dispose();
-            if (shiftToggleHotkey != null)
-                shiftToggleHotkey.Dispose();
+            if (toggleHotkeyLeft != null)
+                toggleHotkeyLeft.Dispose();
+            if (toggleHotkeyRight != null)
+                toggleHotkeyRight.Dispose();
+            if (ctrlToggleHotkeyLeft != null)
+                ctrlToggleHotkeyLeft.Dispose();
+            if (ctrlToggleHotkeyRight != null)
+                ctrlToggleHotkeyRight.Dispose();
+            if (shiftToggleHotkeyLeft != null)
+                shiftToggleHotkeyLeft.Dispose();
+            if (shiftToggleHotkeyRight != null)
+                shiftToggleHotkeyRight.Dispose();
             if (sprintHotkey != null)
                 sprintHotkey.Dispose();
             if (aimPhysicHotkey != null)
@@ -801,6 +919,9 @@ namespace Bedrock_Clicker
             CAPS_LOCK = 20,
             PAGE_UP = 33,
             PAGE_DOWN = 34,
+            APOSTROPHE = 192,
+            MOUSE_6 = 6,
+            MOUSE_5 = 5,
             A = 65,
             B = 66,
             C = 67,
@@ -988,6 +1109,8 @@ namespace Bedrock_Clicker
             private const int RI_MOUSE_MIDDLE_DOWN = 16;
             private const int RI_MOUSE_RIGHT_DOWN = 4;
             private const int RI_MOUSE_RIGHT_UP = 8;
+            private const int RI_MOUSE_FORWARD_UP = 512;
+            private const int RI_MOUSE_BACKWARD_UP = 128;
 
             //Private variables
             private IntPtr windowHandler = IntPtr.Zero;
@@ -998,10 +1121,11 @@ namespace Bedrock_Clicker
             public RawInputDevice[] inputDevicesList = null;
 
             //Public callbacks
-
             public event Action OnWheelScroll;
             public event Action<bool> OnButtonRight;
             public event Action OnButtonMiddle;
+            public event Action OnButtonForward;
+            public event Action OnButtonBackward;
 
             //Core methods
 
@@ -1053,6 +1177,12 @@ namespace Bedrock_Clicker
                             if (((int)mouse.Mouse.Buttons) == RI_MOUSE_RIGHT_UP)  //<- If is mouse right button up
                                 if (OnButtonRight != null)
                                     OnButtonRight(false);
+                            if (((int)mouse.Mouse.Buttons) == RI_MOUSE_FORWARD_UP)  //<- If is mouse forward button up
+                                if (OnButtonForward != null)
+                                    OnButtonForward();
+                            if (((int)mouse.Mouse.Buttons) == RI_MOUSE_BACKWARD_UP)  //<- If is mouse backward button up
+                                if (OnButtonBackward != null)
+                                    OnButtonBackward();
                             break;
                     }
                 }
@@ -1117,6 +1247,8 @@ namespace Bedrock_Clicker
 
         public const int MOUSEEVENTF_LEFTDOWN = 0x02;
         public const int MOUSEEVENTF_LEFTUP = 0x04;
+        public const int MOUSEEVENTF_RIGHTDOWN = 0x08;
+        public const int MOUSEEVENTF_RIGHTUP = 0x10;
 
         public struct POINT
         {
@@ -1144,6 +1276,15 @@ namespace Bedrock_Clicker
 
             mouse_event(MOUSEEVENTF_LEFTDOWN, pnt.X, pnt.Y, 0, 0);
             mouse_event(MOUSEEVENTF_LEFTUP, pnt.X, pnt.Y, 0, 0);
+        }
+
+        public static void DoRightMouseClick()
+        {
+            POINT pnt;
+            GetCursorPos(out pnt);
+
+            mouse_event(MOUSEEVENTF_RIGHTDOWN, pnt.X, pnt.Y, 0, 0);
+            mouse_event(MOUSEEVENTF_RIGHTUP, pnt.X, pnt.Y, 0, 0);
         }
 
         #endregion

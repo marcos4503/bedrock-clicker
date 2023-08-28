@@ -91,6 +91,9 @@
     <Compile Include="WindowAimType.xaml.cs">
       <DependentUpon>WindowAimType.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WindowMouseClick.xaml.cs">
+      <DependentUpon>WindowMouseClick.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowOverlay.xaml.cs">
       <DependentUpon>WindowOverlay.xaml</DependentUpon>
     </Compile>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WindowAimType.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowMouseClick.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -212,6 +219,8 @@
     <Resource Include="resources\icon-512x.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="resources\right-click.png" />
+    <Resource Include="resources\left-click.png" />
     <Resource Include="resources\child-indicator.png" />
     <Resource Include="resources\auto-sprint.png" />
     <Resource Include="resources\aim-down.png" />

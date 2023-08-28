@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\Visual-Studio\Bedrock Clicker\App.xaml
-6-1053742267
+7898512634
 42002620594
-12136008508
+13528343279
 171955312611
-MainWindow.xaml;WindowAim.xaml;WindowAimType.xaml;WindowOverlay.xaml;WindowPvpTips.xaml;WindowSprint.xaml;
+MainWindow.xaml;WindowAim.xaml;WindowAimType.xaml;WindowMouseClick.xaml;WindowOverlay.xaml;WindowPvpTips.xaml;WindowSprint.xaml;
 
-False
+True
 

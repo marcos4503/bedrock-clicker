@@ -30,3 +30,5 @@ D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowAimType.g.cs
 D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowAimType.baml
 D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowAim.g.cs
 D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowAim.baml
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowMouseClick.g.cs
+D:\Visual-Studio\Bedrock Clicker\obj\Debug\WindowMouseClick.baml
