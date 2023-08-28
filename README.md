@@ -39,7 +39,7 @@ The source project of this Software is here in this repository as well. You can 
 
 # Special Thanks
 
-I would like to thank "NirSoft" for developing the freeware "Keyboard State View" which allowed me to see the ID of some keys on the keyboard, which made it possible to add some Hotkeys to Bedrock Clicker functions. The "Keyboard State View" can also be used for debugging Bedrock Clicker in addition to discovering key IDs, so the "Keyboard State View" is also included in this repository, in the folder "Bedrock-Clicker-Keys-Viewer" for future use!
+I would like to thank to "NirSoft" for developing the freeware "Keyboard State View" which allowed me to see the ID of some keys on the keyboard, which made it possible to add some Hotkeys to Bedrock Clicker functions. The "Keyboard State View" can also be used for debugging Bedrock Clicker in addition to discovering key IDs, so the "Keyboard State View" is also included in this repository, in the folder "Bedrock-Clicker-Keys-Viewer" for future use!
 
 # Support projects like this
 
