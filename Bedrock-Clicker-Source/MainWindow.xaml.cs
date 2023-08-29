@@ -101,6 +101,7 @@ namespace Bedrock_Clicker
             //Apply preferences loaded to interface
             pref_cps.SelectedIndex = applicationPreferences.clicksPerSecond;
             pref_hotkey_l.SelectedIndex = applicationPreferences.toggleHotkey;
+            pref_hotkey_r.SelectedIndex = applicationPreferences.toggleHotkey2;
             pref_sprint_hotkey.SelectedIndex = applicationPreferences.sprintHotkey;
             pref_autoOff.SelectedIndex = applicationPreferences.autoToggleOff;
             if (applicationPreferences.autoToggleOff == 0)
@@ -243,7 +244,7 @@ namespace Bedrock_Clicker
                 clicksPerSecond = 50;
 
             //Register the hotkey for toggle auto click
-            RegisterToggleHotkey(applicationPreferences.toggleHotkey);
+            RegisterToggleHotkey(applicationPreferences.toggleHotkey, applicationPreferences.toggleHotkey2);
             //If is desired auto disable auto click on change weapon, register the keys watcher to auto disable clicker and prepare the auto sprint & crosshair complement embeded feature
             if (applicationPreferences.autoToggleOff == 1)
                 RegisterKeysWatcher_And_PrepareAutoSprintFeature_And_CrosshairComplementFeature(applicationPreferences.sprintHotkey);
@@ -322,7 +323,7 @@ namespace Bedrock_Clicker
 
         //Auto clicker methods
 
-        private void RegisterToggleHotkey(int hotkeySelected)
+        private void RegisterToggleHotkey(int hotkeySelected, int hotkeySelected2)
         {
             //Prepare the desired hotkey
             VirtualKeyCodes keycode = VirtualKeyCodes.O;
@@ -361,8 +362,15 @@ namespace Bedrock_Clicker
                 }
             };
 
+            //Prepare the desired hotkey
+            VirtualKeyCodes keycode2 = VirtualKeyCodes.O;
+            if (hotkeySelected2 == 0)
+                keycode2 = VirtualKeyCodes.NUMPAD_5;
+            if (hotkeySelected2 == 1)
+                keycode2 = VirtualKeyCodes.APOSTROPHE;
+
             //Create the toggle hotkey interceptor (right)
-            toggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 3, ModifierKeyCodes.None, VirtualKeyCodes.APOSTROPHE);
+            toggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 3, ModifierKeyCodes.None, keycode2);
             toggleHotkeyRight.OnPressHotkey += () =>
             {
             ReInterceptToggleHotkeyRight:
@@ -390,12 +398,12 @@ namespace Bedrock_Clicker
             //Create the alternative toggle hotkey interceptor with CTRL modifier
             ctrlToggleHotkeyLeft = new KeyboardHotkey_Interceptor(this, 4, ModifierKeyCodes.Control, keycode);
             ctrlToggleHotkeyLeft.OnPressHotkey += () => { toggleHotkeyLeft.ForceOnPressHotkeyEvent(); };
-            ctrlToggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 5, ModifierKeyCodes.Control, VirtualKeyCodes.APOSTROPHE);
+            ctrlToggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 5, ModifierKeyCodes.Control, keycode2);
             ctrlToggleHotkeyRight.OnPressHotkey += () => { toggleHotkeyRight.ForceOnPressHotkeyEvent(); };
             //Create the alternative toggle hotkey interceptor with SHIFT modifier
             shiftToggleHotkeyLeft = new KeyboardHotkey_Interceptor(this, 6, ModifierKeyCodes.Shift, keycode);
             shiftToggleHotkeyLeft.OnPressHotkey += () => { toggleHotkeyLeft.ForceOnPressHotkeyEvent(); };
-            shiftToggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 7, ModifierKeyCodes.Shift, VirtualKeyCodes.APOSTROPHE);
+            shiftToggleHotkeyRight = new KeyboardHotkey_Interceptor(this, 7, ModifierKeyCodes.Shift, keycode2);
             shiftToggleHotkeyRight.OnPressHotkey += () => { toggleHotkeyRight.ForceOnPressHotkeyEvent(); };
         }
 
@@ -845,6 +853,7 @@ namespace Bedrock_Clicker
             //Put the new preferences
             applicationPreferences.clicksPerSecond = pref_cps.SelectedIndex;
             applicationPreferences.toggleHotkey = pref_hotkey_l.SelectedIndex;
+            applicationPreferences.toggleHotkey2 = pref_hotkey_r.SelectedIndex;
             applicationPreferences.sprintHotkey = pref_sprint_hotkey.SelectedIndex;
             applicationPreferences.autoToggleOff = pref_autoOff.SelectedIndex;
             applicationPreferences.worksOnlyInMinecraft = pref_onlyInsideMc.SelectedIndex;
@@ -922,6 +931,7 @@ namespace Bedrock_Clicker
             APOSTROPHE = 192,
             MOUSE_6 = 6,
             MOUSE_5 = 5,
+            NUMPAD_5 = 101,
             A = 65,
             B = 66,
             C = 67,

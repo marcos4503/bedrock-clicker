@@ -4,6 +4,7 @@
   <windowPositionY>191</windowPositionY>
   <clicksPerSecond>5</clicksPerSecond>
   <toggleHotkey>0</toggleHotkey>
+  <toggleHotkey2>0</toggleHotkey2>
   <sprintHotkey>2</sprintHotkey>
   <autoToggleOff>1</autoToggleOff>
   <worksOnlyInMinecraft>0</worksOnlyInMinecraft>

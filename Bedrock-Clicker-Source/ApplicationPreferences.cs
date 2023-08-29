@@ -18,6 +18,7 @@ namespace Bedrock_Clicker
         public int windowPositionY = 80;
         public int clicksPerSecond = 0;
         public int toggleHotkey = 0;
+        public int toggleHotkey2 = 0;
         public int sprintHotkey = 0;
         public int autoToggleOff = 0;
         public int worksOnlyInMinecraft = 0;
@@ -46,6 +47,7 @@ namespace Bedrock_Clicker
                 windowPositionY = loadedPreferences.windowPositionY;
                 clicksPerSecond = loadedPreferences.clicksPerSecond;
                 toggleHotkey = loadedPreferences.toggleHotkey;
+                toggleHotkey2 = loadedPreferences.toggleHotkey2;
                 sprintHotkey = loadedPreferences.sprintHotkey;
                 autoToggleOff = loadedPreferences.autoToggleOff;
                 worksOnlyInMinecraft = loadedPreferences.worksOnlyInMinecraft;

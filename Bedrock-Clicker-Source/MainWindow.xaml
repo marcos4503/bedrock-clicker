@@ -66,6 +66,7 @@
                             <ComboBoxItem Content="F"/>
                         </ComboBox>
                         <ComboBox x:Name="pref_hotkey_r" Width="54" SelectedIndex="0" Margin="3,0,0,0">
+                            <ComboBoxItem Content="Off"/>
                             <ComboBoxItem Content="'"/>
                         </ComboBox>
                         <ComboBox x:Name="pref_sprint_hotkey" Width="62" SelectedIndex="0" Margin="3,0,0,0">
