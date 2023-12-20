@@ -12,7 +12,7 @@ First, download this repository by cloning the "Bedrock-Clicker-Compiled" folder
 
 You need to fulfill some requirements to be able to use this Software...
 
-- The computer may need to have <a href="https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/9b7b8746971ed51a1770ae4293618187/ndp48-web.exe" target="_blank">.Net 4.8</a> installed in order to run the Software.
+- The computer may need to have <a href="https://go.microsoft.com/fwlink/?LinkId=2085155" target="_blank">.Net Framework 4.8</a> installed in order to run the Software.
 - The computer must be 64-bit.
 
 # About this Software
