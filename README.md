@@ -1,3 +1,8 @@
+> [!NOTE]
+> This repository has been archived. I detected an incompatibility with the latest versions of Minecraft Bedrock as of the date I am writing this (April 25, 2026). As I no longer have time to maintain the project, I have decided to discontinue it.
+
+---
+
 <p align="center" style="font-size: 2px;">
     <img src="Bedrock-Clicker-Source/ReadMe/Resources/Bedrock-Clicker-Front.png" />
     <br>
